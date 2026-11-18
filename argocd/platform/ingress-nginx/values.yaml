@@ -1,0 +1,55 @@
+# Ingress NGINX Helm Values
+controller:
+  replicaCount: 1
+
+  # Dedicated IngressClass
+  ingressClass: nginx
+
+  ingressClassResource:
+    name: nginx
+    enabled: true
+    default: false
+    controllerValue: k8s.io/ingress-nginx
+
+  # Do not handle Ingress without an explicit class
+  watchIngressWithoutClass: false
+
+  # Keep NGINX isolated from Traefik
+  hostNetwork: false
+
+  service:
+    enabled: true
+    type: ClusterIP
+
+    external:
+      enabled: true
+
+    internal:
+      enabled: false
+
+  admissionWebhooks:
+    enabled: true
+
+  metrics:
+    enabled: true
+
+    service:
+      enabled: true
+
+    serviceMonitor:
+      enabled: false
+
+  allowSnippetAnnotations: false
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  nodeSelector: {}
+
+  tolerations: []

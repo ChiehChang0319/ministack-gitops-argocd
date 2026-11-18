@@ -1,0 +1,19 @@
+# Virtual environments
+
+
+# Ministack volume
+# 忽略目錄內所有文件及子目錄
+**/data/*
+**/agent1-data/*
+**/agent2-data/*
+# 允許 Git 追蹤 .gitkeep，保留目錄本身
+!**/data/.gitkeep
+!**/agent1-data/.gitkeep
+!**/agent2-data/.gitkeep
+
+# Terraform
+.terraform/
+*tfstate*
+*tfvars*
+
+*.png

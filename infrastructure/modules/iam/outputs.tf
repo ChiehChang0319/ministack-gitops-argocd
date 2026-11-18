@@ -1,0 +1,17 @@
+# 創建IAM Role完成後結果 output 回傳給其他 module
+
+output "eks_cluster_role_arn" {
+  value = aws_iam_role.eks_cluster.arn
+}
+
+output "node_group_role_arn" {
+  value = aws_iam_role.node_group.arn
+}
+
+output "cluster_role_name" {
+  value = aws_iam_role.eks_cluster.name
+}
+
+output "node_role_name" {
+  value = aws_iam_role.node_group.name
+}

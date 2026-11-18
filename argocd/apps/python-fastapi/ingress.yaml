@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: python-fastapi
+  namespace: apps
+spec:
+  ingressClassName: nginx
+
+  rules:
+    - host: app.local.test
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: python-fastapi
+                port:
+                  number: 80

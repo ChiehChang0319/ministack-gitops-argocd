@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-fastapi
+  namespace: apps
+spec:
+  replicas: 4
+  
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: 
+       maxsurge: 25%
+       maxUnavailable: 25%
+
+  selector:
+    matchLabels:
+      app: python-fastapi
+
+  template:
+    metadata:
+      labels:
+        app: python-fastapi
+
+    spec:
+      containers:
+        - name: python-fastapi
+          image: ghcr.io/jerrychang-workspace/githubworkflow/python-fastapi:sha-66fa700
+          imagePullPolicy: IfNotPresent
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 3
+          
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP

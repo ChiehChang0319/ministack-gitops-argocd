@@ -1,0 +1,87 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+
+metadata:
+  name: platform-apps
+  namespace: argocd
+
+spec:
+  goTemplate: true
+
+  generators:
+    - list:
+        elements:
+
+          # Ingress NGINX
+          # https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/Chart.yaml
+          - name: ingress-nginx
+            namespace: ingress-nginx
+
+            chartRepo: https://kubernetes.github.io/ingress-nginx
+            chart: ingress-nginx
+            chartVersion: "4.15.1"
+
+            valuesFile: platform/ingress-nginx/values.yaml
+
+          # Envoy Gateway
+          # https://artifacthub.io/packages/helm/envoy-gateway/gateway-helm
+          - name: envoy-gateway
+            namespace: envoy-gateway-system
+
+            chartRepo: docker.io/envoyproxy
+            chart: gateway-helm
+            chartVersion: "v1.6.7"
+
+            valuesFile: platform/envoy-gateway/values.yaml
+          
+          # Metrics Server
+          # https://github.com/kubernetes-sigs/metrics-server/blob/master/charts/metrics-server/Chart.yaml
+          - name: metrics-server
+            namespace: kube-system
+
+            chartRepo: https://kubernetes-sigs.github.io/metrics-server
+            chart: metrics-server
+            chartVersion: "3.13.0"
+
+            valuesFile: platform/metrics-server/values.yaml
+
+  template:
+
+    metadata:
+      name: '{{.name}}'
+      namespace: argocd
+
+    spec:
+      project: platform
+
+      sources:
+
+        # Source 1: Official Helm Chart
+        - repoURL: '{{.chartRepo}}'
+          chart: '{{.chart}}'
+          targetRevision: '{{.chartVersion}}'
+
+          helm:
+            releaseName: '{{.name}}'
+
+            valueFiles:
+              - '$values/{{.valuesFile}}'
+
+        # Source 2: Git Repo - Platform Values
+        - repoURL: ${{ git-repository }}
+          targetRevision: main
+          ref: values
+
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{.namespace}}'
+
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true

@@ -1,0 +1,67 @@
+
+services:
+  k3s-agent-1:
+    image: rancher/k3s:v1.31.4-k3s1
+    container_name: k3s-agent-1
+    hostname: k3s-agent-1
+    privileged: true
+    restart: unless-stopped
+
+    command:
+      - agent
+      - --server=${K3S_SERVER_URL}
+      - --token=${K3S_TOKEN}
+      - --node-name=k3s-agent-1
+      - --node-ip=172.30.0.11
+      - --flannel-iface=eth0
+
+    volumes:
+      - agent1-data:/var/lib/rancher/k3s
+      - agent1-node:/etc/rancher/node
+      - /lib/modules:/lib/modules:ro
+
+    networks:
+      ministack-net:
+        ipv4_address: 172.30.0.11
+
+  k3s-agent-2:
+    image: rancher/k3s:v1.31.4-k3s1
+    container_name: k3s-agent-2
+    hostname: k3s-agent-2
+    privileged: true
+    restart: unless-stopped
+
+    command:
+      - agent
+      - --server=${K3S_SERVER_URL}
+      - --token=${K3S_TOKEN}
+      - --node-name=k3s-agent-2
+      - --node-ip=172.30.0.12
+      - --flannel-iface=eth0
+
+    volumes:
+      - agent2-data:/var/lib/rancher/k3s
+      - agent2-node:/etc/rancher/node
+      - /lib/modules:/lib/modules:ro
+
+    networks:
+      ministack-net:
+        ipv4_address: 172.30.0.12
+
+volumes:
+  agent1-data:
+    name: k3s-agent1-data
+  
+  agent1-node:
+    name: k3s-agent1-node
+
+  agent2-data:
+    name: k3s-agent2-data
+
+  agent2-node:
+    name: k3s-agent2-node
+
+networks:
+  ministack-net:
+    external: true
+    name: ministack-net

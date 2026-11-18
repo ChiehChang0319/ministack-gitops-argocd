@@ -1,0 +1,77 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+
+metadata:
+  name: platform
+  namespace: argocd
+
+spec:
+  description: Local EKS Platform Infrastructure
+
+  sourceRepos:
+    # Git Repo : Platform Helm values
+    - ${{ git-repository }}
+
+    # Ingress NGINX Helm Repository
+    - https://kubernetes.github.io/ingress-nginx
+
+    # Envoy Gateway OCI Registry
+    - docker.io/envoyproxy
+
+    # Metrics Server Helm Repository
+    - https://kubernetes-sigs.github.io/metrics-server
+
+  destinations:
+    - namespace: ingress-nginx
+      server: https://kubernetes.default.svc
+
+    - namespace: envoy-gateway-system
+      server: https://kubernetes.default.svc
+
+    - namespace: kube-system
+      server: https://kubernetes.default.svc
+
+  # Cluster-scoped resources required by Helm charts
+  clusterResourceWhitelist:
+    
+    # Kubernetes Namespace
+    - group: ""
+      kind: Namespace
+    
+    # Custom Resource Definitions
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+
+    # Cluster RBAC
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+
+    # Cluster API Service
+    - group: apiregistration.k8s.io
+      kind: APIService
+
+    # Ingress
+    - group: networking.k8s.io
+      kind: IngressClass
+
+     # Admission Webhooks
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+
+    - group: admissionregistration.k8s.io
+      kind: MutatingWebhookConfiguration
+
+    # Admission Policies
+    - group: admissionregistration.k8s.io
+      kind: ValidatingAdmissionPolicy
+
+    - group: admissionregistration.k8s.io
+      kind: ValidatingAdmissionPolicyBinding
+
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"
