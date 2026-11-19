@@ -19,9 +19,10 @@
 
 
 ## 三、項目架構
-1~6 : MiniStack EKS K3s集群搭建   
-7~8 : Helm 安裝 ArgoCD，ArgoCD 核心組件介紹   
-9~10: ArgoCD 項目管理架構  
+
+1 - 6 : MiniStack EKS K3s集群搭建   
+7 - 8 : Helm 安裝 ArgoCD，ArgoCD 核心組件介紹   
+9 - 10: ArgoCD 項目管理架構  
 (使用 **draw.io** 畫圖展示)
 
 ### 1. MiniStack 模擬 EKS 官方架構
